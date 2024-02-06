@@ -1,12 +1,25 @@
+import cors from "cors";
 import express, { response } from "express";
-import { PORT, mongoDBURL } from "./config.js";
 import mongoose from "mongoose";
+import { PORT, mongoDBURL } from "./config.js";
 import { Task } from "./models/taskModel.js";
 
 const app = express();
 
 app.use(express.json());
 
+// Middleware for handling CORS POLICY
+// OPTION1: allow all origins with default of cors(*)
+app.use(cors());
+/* OPTION2: allow custom origins
+  app.use(
+    cors({
+      origin: "http://localhost:5173",
+      methods: ["GET", "POST", "PUT", "DELETE"],
+      allowHeaders: ["Content-Type"]
+    })
+  )
+*/
 app.get("/", async (req, res) => {
   try {
     const tasks = await Task.find({});
