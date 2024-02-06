@@ -8,8 +8,8 @@ const taskSchema = mongoose.Schema(
     },
     nextSession: {
       type: String,
-      default: "1-day",
-      enum: ["1-day", "7-days", "16-days", "35-days"],
+      default: "0-day",
+      enum: ["0-day", "1-day", "7-days", "16-days", "35-days"],
       required: true,
     },
     link: {

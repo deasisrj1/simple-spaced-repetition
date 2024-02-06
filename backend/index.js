@@ -60,6 +60,24 @@ app.post("/", async (request, response) => {
   }
 });
 
+app.get("/todays-task", async (request, response) => {
+  const todaysDate = new Date();
+  try {
+    const tasks = await Task.find({
+      date: { $lte: todaysDate },
+    });
+    return response.status(201).send({
+      count: tasks.length,
+      data: tasks,
+    });
+  } catch (error) {
+    console.log(error);
+    response
+      .status(500)
+      .send({ message: "Problem getting today's tasks", error });
+  }
+});
+
 app.delete("/:id", async (request, response) => {
   try {
     const { id } = request.params;
