@@ -9,7 +9,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { styled } from "@mui/material/styles";
 import { useEffect, useState } from "react";
-import DeleteModal from "./DeleteModal";
+import ConfirmationModal from "./ConfirmationModal";
 import axios from "axios";
 // import { useNavigate } from "react-router-dom";
 
@@ -33,20 +33,41 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-const TaskTable = ({ tasks }) => {
+const TaskTable = ({ tasks, taskView }) => {
   const [showModal, setShowModal] = useState(false);
   const [id, setId] = useState("");
+  const [action, setAction] = useState("");
+  const [task, setTask] = useState({});
 
-  const handleDelete = (id) => {
+  const handleDelete = (id, deleteTask) => {
     setId(id);
+    setAction("delete");
+    setTask(deleteTask);
+    setShowModal(true);
+  };
+
+  const handleReset = (id, resetTask) => {
+    console.log(id);
+    setAction("reset");
+    setId(id);
+    setTask(resetTask);
+    setShowModal(true);
+  };
+
+  const handleComplete = (id, completeTask) => {
+    setAction("complete");
+    setId(id);
+    setTask(completeTask);
     setShowModal(true);
   };
 
   return (
     <div>
       {showModal && (
-        <DeleteModal
+        <ConfirmationModal
+          action={action}
           open={showModal}
+          task={task}
           taskId={id}
           onClose={() => setShowModal(false)}
         />
@@ -57,12 +78,18 @@ const TaskTable = ({ tasks }) => {
             <TableRow>
               <StyledTableCell>Topic</StyledTableCell>
               <StyledTableCell align="right">Review Date</StyledTableCell>
-              <StyledTableCell align="right" width={50}>
-                Reset
-              </StyledTableCell>
-              <StyledTableCell align="right" width={50}>
-                Complete
-              </StyledTableCell>
+              {taskView == "all" ? (
+                <></>
+              ) : (
+                <>
+                  <StyledTableCell align="right" width={50}>
+                    Reset
+                  </StyledTableCell>
+                  <StyledTableCell align="right" width={50}>
+                    Complete
+                  </StyledTableCell>
+                </>
+              )}
               <StyledTableCell align="right" width={10}>
                 Delete
               </StyledTableCell>
@@ -74,16 +101,33 @@ const TaskTable = ({ tasks }) => {
                 <StyledTableCell component="th" scope="row">
                   {task.topic}
                 </StyledTableCell>
-                <StyledTableCell align="right">{task.date}</StyledTableCell>
-                <StyledTableCell align="right" width={50}>
-                  <Button>reset</Button>
+                <StyledTableCell align="right">
+                  {new Date(task.date).toDateString()}
                 </StyledTableCell>
-                <StyledTableCell align="right" width={50}>
-                  <Button variant="contained">complete</Button>
-                </StyledTableCell>
+                {taskView == "all" ? (
+                  <></>
+                ) : (
+                  <>
+                    <StyledTableCell align="right" width={50}>
+                      <Button onClick={() => handleReset(task._id, task)}>
+                        reset
+                      </Button>
+                    </StyledTableCell>
+                    <StyledTableCell align="right" width={50}>
+                      <Button
+                        variant="contained"
+                        onClick={() => handleComplete(task._id, task)}
+                      >
+                        complete
+                      </Button>
+                    </StyledTableCell>
+                  </>
+                )}
                 <StyledTableCell align="right" width={50}>
                   <button>
-                    <DeleteForeverIcon onClick={() => handleDelete(task._id)} />
+                    <DeleteForeverIcon
+                      onClick={() => handleDelete(task._id, task)}
+                    />
                   </button>
                 </StyledTableCell>
               </StyledTableRow>

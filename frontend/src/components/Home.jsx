@@ -72,7 +72,7 @@ const Home = () => {
         </Stack>
       </Stack>
 
-      {loading ? <></> : <TaskTable tasks={tasks} />}
+      {loading ? <></> : <TaskTable tasks={tasks} taskView={taskView} />}
     </div>
   );
 };

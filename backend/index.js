@@ -65,7 +65,7 @@ app.get("/todays-task", async (request, response) => {
   try {
     const tasks = await Task.find({
       date: { $lte: todaysDate },
-    });
+    }).sort({ date: 1 });
     return response.status(201).send({
       count: tasks.length,
       data: tasks,
@@ -75,6 +75,38 @@ app.get("/todays-task", async (request, response) => {
     response
       .status(500)
       .send({ message: "Problem getting today's tasks", error });
+  }
+});
+
+app.put("/:id", async (request, response) => {
+  try {
+    const { id } = request.params;
+    if (!request.body.nextSession) {
+      return response
+        .status(400)
+        .send({ message: "send all required fields..." });
+    }
+
+    const task = await Task.findOne({ _id: id });
+    if (!task) {
+      return response
+        .status(404)
+        .send({ message: "could not find that task..." });
+    }
+
+    let session = request.body.nextSession;
+    const numDays = Number(session.split("-")[0]);
+    const date = new Date();
+    date.setDate(date.getDate() + numDays);
+
+    task.date = date;
+    task.nextSession = session;
+    await task.save();
+
+    return response.status(200).send(task);
+  } catch (error) {
+    console.log(error);
+    response.status(501).send({ message: error });
   }
 });
 
