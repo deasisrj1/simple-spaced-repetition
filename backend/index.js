@@ -60,6 +60,27 @@ app.post("/", async (request, response) => {
   }
 });
 
+app.delete("/:id", async (request, response) => {
+  try {
+    const { id } = request.params;
+
+    const result = await Task.findOneAndDelete({
+      _id: id,
+    });
+
+    if (!result) {
+      return response.status(404).json({ message: "could not fine Task" });
+    }
+
+    return response
+      .status(200)
+      .json({ message: "Task was deleted successfully!" });
+  } catch (error) {
+    console.log(error);
+    response.status(500).send({ message: error });
+  }
+});
+
 mongoose
   .connect(mongoDBURL)
   .then(() => {
