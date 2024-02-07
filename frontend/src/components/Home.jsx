@@ -39,6 +39,8 @@ const Home = () => {
         });
     }
   }, [taskView]);
+
+  // TODO: in the future maybe create user login and auth ...
   return (
     <div>
       {showModal && (

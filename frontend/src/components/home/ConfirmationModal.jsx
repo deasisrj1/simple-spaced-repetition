@@ -14,7 +14,7 @@ const style = {
   p: 4,
 };
 
-// TODO:  Repeating pattern create a template later
+// TODO:   Repeating pattern create a template later
 const ConfirmationModal = ({ task, action, taskId, open, onClose }) => {
   const [loading, setLoading] = useState(false);
   const getSession = (session) => {

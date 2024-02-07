@@ -34,6 +34,10 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
+// TODO: Select mupltiple rows then complete, reset or delete
+// TODO: Edit a Task
+// TODO: Routing
+
 const TaskTable = ({ tasks, taskView }) => {
   const [showModal, setShowModal] = useState(false);
   const [id, setId] = useState("");
