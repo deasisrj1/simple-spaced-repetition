@@ -11,6 +11,7 @@ import { styled } from "@mui/material/styles";
 import { useEffect, useState } from "react";
 import ConfirmationModal from "./ConfirmationModal";
 import axios from "axios";
+import { Link } from "@mui/material";
 // import { useNavigate } from "react-router-dom";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -47,7 +48,6 @@ const TaskTable = ({ tasks, taskView }) => {
   };
 
   const handleReset = (id, resetTask) => {
-    console.log(id);
     setAction("reset");
     setId(id);
     setTask(resetTask);
@@ -99,7 +99,9 @@ const TaskTable = ({ tasks, taskView }) => {
             {tasks.map((task) => (
               <StyledTableRow key={task._id}>
                 <StyledTableCell component="th" scope="row">
-                  {task.topic}
+                  <Link href={task.link} color="inherit">
+                    {task.topic}
+                  </Link>
                 </StyledTableCell>
                 <StyledTableCell align="right">
                   {new Date(task.date).toDateString()}

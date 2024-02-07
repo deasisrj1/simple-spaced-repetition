@@ -53,8 +53,6 @@ const ConfirmationModal = ({ task, action, taskId, open, onClose }) => {
       setLoading(true);
       const session = "0-day";
       const data = { nextSession: session };
-
-      console.log(session);
       axios
         .put(`http://localhost:3005/${taskId}`, data)
         .then(() => {
@@ -93,7 +91,8 @@ const ConfirmationModal = ({ task, action, taskId, open, onClose }) => {
             ) : (
               <p>Complete this Task?</p>
             )}
-            {taskId}
+            <p>Topic: {task.topic}</p>
+            <p>Task Id: {taskId}</p>
             <div>
               <Button
                 variant="contained"

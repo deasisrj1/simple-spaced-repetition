@@ -37,14 +37,21 @@ app.get("/", async (req, res) => {
 app.post("/", async (request, response) => {
   try {
     if (!request.body.topic) {
-      return response
-        .status(400)
-        .send({ message: "send all required fields..." });
     }
 
     const newTask = {
       ...request.body,
     };
+
+    try {
+      if (newTask.link) {
+        new URL(newTask.link);
+      }
+    } catch (error) {
+      return response
+        .status(400)
+        .send({ message: "Please Provide a Valid URL" });
+    }
 
     // const newTask = {
     //   topic: request.body.topic,
