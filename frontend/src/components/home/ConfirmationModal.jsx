@@ -57,6 +57,8 @@ const ConfirmationModal = ({ task, action, taskId, open, onClose }) => {
         .put(`http://localhost:3005/${taskId}`, data)
         .then(() => {
           setLoading(false);
+          // REPLACE THIS WITH useNAVIGATE AFTER DOING ROUTER
+          window.location.reload();
         })
         .catch((error) => {
           console.log(error);
@@ -70,6 +72,8 @@ const ConfirmationModal = ({ task, action, taskId, open, onClose }) => {
         .put(`http://localhost:3005/${taskId}`, data)
         .then(() => {
           setLoading(false);
+          // REPLACE THIS WITH useNAVIGATE AFTER DOING ROUTER
+          window.location.reload();
         })
         .catch((error) => {
           console.log(error);
