@@ -88,11 +88,12 @@ app.get("/todays-task", async (request, response) => {
 app.put("/:id", async (request, response) => {
   try {
     const { id } = request.params;
-    if (!request.body.nextSession) {
-      return response
-        .status(400)
-        .send({ message: "send all required fields..." });
-    }
+
+    // if (!request.body.nextSession) {
+    //   return response
+    //     .status(400)
+    //     .send({ message: "send all required fields..." });
+    // }
 
     const task = await Task.findOne({ _id: id });
     if (!task) {
@@ -102,12 +103,27 @@ app.put("/:id", async (request, response) => {
     }
 
     let session = request.body.nextSession;
-    const numDays = Number(session.split("-")[0]);
-    const date = new Date();
-    date.setDate(date.getDate() + numDays);
+    if (session) {
+      const numDays = Number(session.split("-")[0]);
+      const numHours = 7;
 
-    task.date = date;
-    task.nextSession = session;
+      const date = new Date();
+      date.setDate(date.getDate() + numDays);
+      date.setHours(0, 0, 0, 0);
+      task.date = date;
+      task.nextSession = session;
+    }
+
+    const body = request.body;
+
+    if (body?.link) task.link = body?.link;
+    if (body?.topic) task.topic = body?.topic;
+    if (body?.date) {
+      let newDate = new Date(body?.date);
+      newDate.setHours(0, 0, 0, 0);
+      task.date = newDate;
+    }
+
     await task.save();
 
     return response.status(200).send(task);
