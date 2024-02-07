@@ -23,13 +23,13 @@ const ConfirmationModal = ({ task, action, taskId, open, onClose }) => {
         return "1-day";
 
       case "1-day":
-        return "7-day";
+        return "7-days";
 
       case "7-days":
-        return "16-day";
+        return "16-days";
 
       case "16-days":
-        return "35-day";
+        return "35-days";
 
       case "35-days":
         return "0-day";
