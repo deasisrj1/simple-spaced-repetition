@@ -123,7 +123,7 @@ const TaskTable = ({ tasks, taskView }) => {
             {tasks.map((task) => (
               <StyledTableRow key={task._id}>
                 <StyledTableCell component="th" scope="row">
-                  <Link href={task.link} color="inherit">
+                  <Link href={task.link} color="inherit" target="_blank">
                     {task.topic}
                   </Link>
                 </StyledTableCell>
