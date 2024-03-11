@@ -1,6 +1,14 @@
-import { Box, Button, Modal, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Modal,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
 import axios from "axios";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { Form, redirect } from "react-router-dom";
 
 const style = {
   position: "absolute",
@@ -14,13 +22,20 @@ const style = {
   p: 4,
 };
 
+export async function action({ request }) {
+  const formData = await request.formData();
+  const data = Object.fromEntries(formData);
+
+  const res = await axios.post("http://localhost:3005", data);
+
+  return redirect("/");
+}
+
 const CreateTaskModal = ({ open, onClose }) => {
-  const [topic, setTopic] = useState("");
   const [url, setUrl] = useState("");
   const [error, setError] = useState("");
-  const [loadin, setLoading] = useState(false);
-  const handleSubmit = (event) => {
-    event.preventDefault();
+
+  useEffect(() => {
     setError("");
     try {
       if (url) {
@@ -30,24 +45,8 @@ const CreateTaskModal = ({ open, onClose }) => {
       setError("Please Provide a Valid URL");
       return;
     }
-    setLoading(true);
-    const data = {
-      topic,
-      link: url,
-    };
-    axios
-      .post("http://localhost:3005", data)
-      .then(() => {
-        setLoading(false);
-        // CHANGE TO NAVIGATE AFTER ROUTER SETUP
-        window.location.reload();
-      })
-      .catch((error) => {
-        setLoading(false);
-        console.log(error);
-        alert("There was an error check console...");
-      });
-  };
+  }, [url]);
+
   return (
     <div>
       <Modal open={open} onClose={onClose}>
@@ -60,33 +59,56 @@ const CreateTaskModal = ({ open, onClose }) => {
               {error}
             </Typography>
           )}
-          <form autoComplete="off" onSubmit={handleSubmit}>
+          <Form
+            method="post"
+            id="task-form"
+            autoComplete="off"
+            onSubmit={onClose}
+          >
             <TextField
+              name="topic"
               type="text"
               variant="outlined"
               color="secondary"
               label="Topic"
-              onChange={(e) => setTopic(e.target.value)}
-              value={topic}
+              // onChange={(e) => setTopic(e.target.value)}
+              // value={topic}
               fullWidth
               required
               sx={{ mb: 4 }}
             />
             <TextField
+              name="link"
               type="text"
               variant="outlined"
               color="secondary"
               label="URL Link"
               onChange={(e) => setUrl(e.target.value)}
-              value={url}
+              // value={url}
               fullWidth
               sx={{ mb: 4 }}
             />
 
-            <Button variant="outlined" color="secondary" type="submit">
-              Create Task
-            </Button>
-          </form>
+            <Stack direction="row" justifyContent="space-between">
+              <Button
+                disabled={error == "" ? false : true}
+                variant="outlined"
+                color="secondary"
+                type="submit"
+              >
+                Create Task
+              </Button>
+
+              <Button
+                variant="outlined"
+                color="error"
+                type="button"
+                onClick={() => onClose()}
+              >
+                Cancel
+              </Button>
+            </Stack>
+          </Form>
         </Box>
       </Modal>
     </div>

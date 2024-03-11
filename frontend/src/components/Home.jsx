@@ -4,41 +4,22 @@ import { useState, useEffect } from "react";
 import { Stack } from "@mui/material";
 import CreateTaskModal from "./CreateTaskModal";
 import Button from "@mui/material/Button";
+import TodoPage from "./TodoPage";
+import { Outlet, Link, Form } from "react-router-dom";
 
 const Home = () => {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [taskView, setTaskView] = useState("today");
+  const [showTodo, setShowTodo] = useState(false);
 
-  useEffect(() => {
-    setLoading(true);
-    if (taskView === "today") {
-      axios
-        .get("http://localhost:3005/todays-task")
-        .then((response) => {
-          console.log(response.data.data);
-          setTasks(response.data.data);
-          setLoading(false);
-        })
-        .catch((error) => {
-          console.log(error);
-          setLoading(false);
-        });
-    } else if (taskView === "all") {
-      axios
-        .get("http://localhost:3005/")
-        .then((response) => {
-          console.log(response.data.data);
-          setTasks(response.data.data);
-          setLoading(false);
-        })
-        .catch((error) => {
-          console.log(error);
-          setLoading(false);
-        });
+  const handleTaskView = (view) => {
+    if (showTodo) {
+      setShowTodo(false);
     }
-  }, [taskView]);
+    setTaskView(view);
+  };
 
   // TODO: in the future maybe create user login and auth ...
   return (
@@ -46,35 +27,56 @@ const Home = () => {
       {showModal && (
         <CreateTaskModal open={showModal} onClose={() => setShowModal(false)} />
       )}
+
       <Stack direction="row" justifyContent="space-between">
-        <Button
-          variant="contained"
-          onClick={() => setShowModal(true)}
-          sx={{ mb: 1 }}
-        >
-          New Task
-        </Button>
         <Stack direction="row">
+          <Form action="todo">
+            <Button
+              type="submit"
+              variant="contained"
+              sx={{ mb: 1 }}
+              align="left"
+            >
+              Todo List
+            </Button>
+          </Form>
+        </Stack>
+
+        <Stack direction="row">
+          <Form action="todays-tasks">
+            <Button
+              type="submit"
+              variant="contained"
+              sx={{ mb: 1, ml: 1 }}
+              align="right"
+            >
+              Today's Tasks
+            </Button>
+          </Form>
+          <Form action="all-tasks">
+            <Button
+              type="submit"
+              variant="contained"
+              sx={{ mb: 1, ml: 1 }}
+              align="right"
+            >
+              All Tasks
+            </Button>
+          </Form>
+
           <Button
+            type="submit"
             variant="contained"
-            onClick={() => setTaskView("today")}
-            sx={{ mb: 1 }}
-            align="right"
-          >
-            Today's Tasks
-          </Button>
-          <Button
-            variant="contained"
-            onClick={() => setTaskView("all")}
             sx={{ mb: 1, ml: 1 }}
             align="right"
+            onClick={() => setShowModal(true)}
           >
-            All Tasks
+            New Task
           </Button>
         </Stack>
       </Stack>
 
-      {loading ? <></> : <TaskTable tasks={tasks} taskView={taskView} />}
+      <Outlet />
     </div>
   );
 };
