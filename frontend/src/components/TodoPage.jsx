@@ -134,6 +134,7 @@ const TodoPage = () => {
   const [showAdd, setShowAdd] = useState(false);
   const [showEditId, setShowEditId] = useState("");
   const [isEditing, setIsEditing] = useState(false);
+  const [todoValue, setTodoValue] = useState("");
 
   const fetcher = useFetcher();
 
@@ -208,20 +209,27 @@ const TodoPage = () => {
                 .map((todo) => (
                   <StyledTableRow
                     key={todo._id}
-                    onMouseEnter={() => setShowEditId(todo._id)}
+                    onMouseEnter={() => {
+                      isEditing ? "" : setShowEditId(todo._id);
+                    }}
                     onMouseLeave={() => setShowEditId("")}
                   >
                     {isEditing === todo._id && (
                       <StyledTableCell component="th" scope="row" align="left">
-                        <fetcher.Form
-                          method="post"
-                          action=""
-                          onSubmit={() => setIsEditing("")}
+                        <Stack
+                          direction="row"
+                          justifyContent="space-between"
+                          alignItems="center"
                         >
-                          <Stack
-                            direction="row"
-                            justifyContent="space-between"
-                            alignItems="center"
+                          <TextField
+                            fullWidth
+                            value={todoValue || todo.todo}
+                            onChange={(e) => setTodoValue(e.target.value)}
+                          />
+                          <fetcher.Form
+                            method="post"
+                            action=""
+                            onSubmit={() => setIsEditing("")}
                           >
                             <input
                               name="intent"
@@ -233,27 +241,31 @@ const TodoPage = () => {
                               type="hidden"
                               value={todo.todo}
                             />
-                            <input name="id" type="hidden" value={todo._id} />
-                            <TextField
+                            <input
                               name="todo"
-                              fullWidth
-                              defaultValue={todo.todo}
+                              type="hidden"
+                              value={todoValue}
                             />
+                            <input name="id" type="hidden" value={todo._id} />
 
                             <Stack direction="row">
                               <IconButton size="small" edge="end" type="submit">
                                 <CheckIcon color="success" />
                               </IconButton>
+
                               <IconButton
                                 size="small"
                                 edge="end"
-                                onClick={() => setIsEditing("")}
+                                onClick={() => {
+                                  setIsEditing("");
+                                  setTodoValue("");
+                                }}
                               >
                                 <CloseIcon color="error" />
                               </IconButton>
                             </Stack>
-                          </Stack>
-                        </fetcher.Form>
+                          </fetcher.Form>
+                        </Stack>
                       </StyledTableCell>
                     )}
 
@@ -346,7 +358,9 @@ const TodoPage = () => {
               {completedTodos.map((todo) => (
                 <StyledTableRow
                   key={todo._id}
-                  onMouseEnter={() => setShowEditId(todo._id)}
+                  onMouseEnter={() => {
+                    isEditing ? "" : setShowEditId(todo._id);
+                  }}
                   onMouseLeave={() => setShowEditId("")}
                   height={55}
                 >
