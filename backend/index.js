@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 import { PORT, mongoDBURL } from "./config.js";
 import tasksRoute from "./routes/tasksRoute.js";
 import todosRoute from "./routes/todosRoute.js";
+import streakRoute from "./routes/streakRoute.js";
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.use(cors());
 
 app.use("/", tasksRoute);
 app.use("/todo", todosRoute);
+app.use("/streak", streakRoute);
 
 mongoose
   .connect(mongoDBURL)

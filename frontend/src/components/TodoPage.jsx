@@ -43,8 +43,10 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 export async function loader() {
-  const res = await axios.get("http://localhost:3005/todo");
-  return res.data.data;
+  const todos = await axios.get("http://localhost:3005/todo");
+  const streak = await axios.get("http://localhost:3005/streak");
+
+  return { todos: todos.data.data, streak: streak.data.data };
 }
 
 export async function action({ request }) {
@@ -125,12 +127,31 @@ export async function action({ request }) {
     return res;
   }
 
+  if (intent === "add-streak") {
+    const id = formData.get("id");
+
+    const res = await axios.put(`http://localhost:3005/streak/${id}`);
+
+    return res;
+  }
+
+  if (intent === "reset-streak") {
+    const id = formData.get("id");
+
+    const res = await axios.put(`http://localhost:3005/streak/reset/${id}`);
+
+    return res;
+  }
   throw json({ message: "Invalid intent" }, { status: 400 });
 }
 
 const TodoPage = () => {
-  const todos = useLoaderData();
+  const loader = useLoaderData();
+  const todos = loader.todos;
+  const streak = loader.streak;
+
   const completedTodos = todos.filter((todo) => todo.completed === true);
+  const [count, setCount] = useState(0);
   const [showAdd, setShowAdd] = useState(false);
   const [showEditId, setShowEditId] = useState("");
   const [isEditing, setIsEditing] = useState(false);
@@ -148,9 +169,25 @@ const TodoPage = () => {
     setShowAdd(false);
   };
 
+  useEffect(() => {
+    const count = JSON.parse(localStorage.getItem("count"));
+    if (count) {
+      setCount(count);
+    }
+  }, []);
+
+  const handleCount = () => {
+    localStorage.setItem("count", JSON.stringify(count + 1));
+    setCount((prev) => prev + 1);
+  };
+  const resetCount = () => {
+    localStorage.setItem("count", JSON.stringify(0));
+    setCount(0);
+  };
+
   return (
     <div>
-      <Stack direction="row" justifyContent="space-between">
+      <Stack direction="row" justifyContent="space-between" alignItems="center">
         <Button
           variant="contained"
           sx={{ mb: 1 }}
@@ -158,7 +195,34 @@ const TodoPage = () => {
         >
           Add Todo
         </Button>
-        streak
+        <Stack direction="row" justifyContent="space-between">
+          <fetcher.Form
+            method="put"
+            onSubmit={(event) => {
+              if (!confirm("Are you sure you want to delete this Todo")) {
+                event.preventDefault();
+              }
+            }}
+          >
+            <input name="id" type="hidden" defaultValue={streak._id} />
+            <IconButton
+              size="small"
+              edge="end"
+              type="submit"
+              name="intent"
+              value="reset-streak"
+            >
+              <ReplayIcon color="warning" />
+            </IconButton>
+          </fetcher.Form>
+
+          <fetcher.Form method="put">
+            <input name="id" type="hidden" defaultValue={streak._id} />
+            <Button type="submit" name="intent" value="add-streak">
+              streak {streak.count}
+            </Button>
+          </fetcher.Form>
+        </Stack>
         <Form
           method="post"
           action=""
@@ -426,6 +490,18 @@ const TodoPage = () => {
             </TableBody>
           </Table>
         </TableContainer>
+      </Stack>
+
+      <Stack direction="row" justifyContent="space-between">
+        <div>
+          <IconButton size="small" edge="end" onClick={resetCount}>
+            <ReplayIcon color="warning" />
+          </IconButton>
+
+          <Button type="button" onClick={handleCount}>
+            count {count}
+          </Button>
+        </div>
       </Stack>
     </div>
   );
